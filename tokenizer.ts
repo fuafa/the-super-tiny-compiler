@@ -18,6 +18,17 @@ export default function tokenizer(input: string): TokenObject[] {
       continue
     }
 
+    if (char === ')') {
+      tokens.push({
+        type: 'paren',
+        value: ')'
+      })
+
+      current += 1
+
+      continue
+    }
+
     let WHITESPACE = /\s/
     if (WHITESPACE.test(char)) {
       current++
