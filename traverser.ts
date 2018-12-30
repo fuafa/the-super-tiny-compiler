@@ -5,6 +5,9 @@ type Visitor = {
   }
 }
 
+function assertNever(x: never, node: any): never {
+  throw new TypeError(node.type)
+}
 export function traverser(ast: AST, visitor: Visitor) {
   function traverseArray(array: ASTChild[], parent: ASTComplete) {
     array.forEach(child => {
@@ -31,8 +34,10 @@ export function traverser(ast: AST, visitor: Visitor) {
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
-      // default:
-      //   throw new TypeError(node.type)
+      default:
+        // When the return type is void, the Exhaustiveness checking fails,
+        // so use the assertNever function instead
+        assertNever(node, node)
     }
 
     if (methods && methods.exit) {
