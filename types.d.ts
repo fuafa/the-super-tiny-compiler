@@ -28,7 +28,7 @@ type ASTType = "CallExpression" | "NumberLiteral" | "StringLiteral";
 // Less precise
 // type AST = {
 //   type: ASTType;
-//   body: Array<AST>;
+//   body?: Array<AST>;
 //   name?: string;
 //   value?: string;
 //   params?: Array<AST>;
