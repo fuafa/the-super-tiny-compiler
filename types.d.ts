@@ -1,5 +1,11 @@
 type Token = "name" | "number" | "string" | "paren";
 
+// Less precise
+// type TokenObject = {
+//   type: Token,
+//   value: string
+// }
+
 // FIXME: not work
 type TokenObjectNotWork<
   T extends Token,
@@ -17,7 +23,25 @@ type TokenObject<
     : { type: T; value: string }
 > = S;
 
-// type TokenObject = {
-//   type: Token,
-//   value: string
-// }
+
+type ASTType = "CallExpression" | "NumberLiteral" | "StringLiteral";
+// Less precise
+// type AST = {
+//   type: ASTType;
+//   body: Array<AST>;
+//   name?: string;
+//   value?: string;
+//   params?: Array<AST>;
+// };
+
+type AST = {
+  type: 'Program',
+  body: ASTChild[]
+}
+
+type ASTChild<
+  T extends ASTType = ASTType,
+  S = T extends "CallExpression"
+    ? { type: T; name: string; params: Array<ASTChild> }
+    : { type: T; value: string }
+> = S;
