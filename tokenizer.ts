@@ -1,14 +1,3 @@
-type Token = 
-    'name' 
-  | 'number' 
-  | 'string' 
-  | 'paren'
-
-type TokenObject = {
-  type: Token,
-  value: string
-}
-
 export default function tokenizer(input: string): TokenObject[] {
   let current = 0
 
