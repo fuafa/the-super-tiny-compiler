@@ -1,27 +1,60 @@
-type ASTComplete = AST | ASTChild
+type ASTComplete = (AST | ASTChild) & {_context?: any[]}
+
 type Visitor = {
-  [P in ASTType | 'Program']: {
-    [K in 'enter' | 'exit']: (node: ASTComplete, parent: ASTComplete | null) => void
+  [P in ASTType]: {
+    // [K in 'enter' | 'exit']: (node: ASTComplete, parent: ASTComplete | null) => void
+    enter: (node: ASTChild & {_context?: any[]}, parent: ASTComplete) => void,
+    exit?: (node: ASTChild & {_context?: any[]}, parent: ASTComplete) => void
+  }
+
+  // Not Work
+  // StringLiteral: {
+  //   enter: (node: ASTChild<'StringLiteral'>, parent: ASTComplete) => void
+  // }
+  // NumberLiteral: {
+  //   enter: (node: ASTChild<'NumberLiteral'>, parent: ASTComplete) => void,
+  // }
+  // CallExpression: {
+  //   enter: (node: ASTChild<'CallExpression'>, parent: ASTComplete) => void,
+  //   exit: (node: ASTChild<'CallExpression'>, parent: ASTComplete) => void,
+  // }
+}
+
+type ValueVisitor = {
+  [P in 'NumberLiteral' | 'StringLiteral']: {
+    enter: (node: ASTChild<P>, parent: ASTComplete) => void
+  }
+}
+type CallVisitor = {
+  CallExpression: {
+    enter: (node: ASTChild<'CallExpression'>, parent: ASTComplete) => void
+    exit: (node: ASTChild<'CallExpression'>, parent: ASTComplete) => void
   }
 }
 
 function assertNever(x: never, node: any): never {
   throw new TypeError(node.type)
 }
-export function traverser(ast: AST, visitor: Visitor) {
+export default function traverser(ast: AST, visitor: Visitor) {
   function traverseArray(array: ASTChild[], parent: ASTComplete) {
     array.forEach(child => {
       traverseNode(child, parent)
     })
   }
 
-  function traverseNode(node: AST, parent: null): void
-  function traverseNode(node: ASTChild, parent: ASTComplete): void
-  function traverseNode(node: ASTComplete, parent: ASTComplete | null): void {
-    let methods = visitor[node.type]
+  // function traverseNode(node: AST): void
+  // function traverseNode(node: ASTChild, parent: ASTComplete): void
+  function traverseNode(node: ASTComplete, parent?: ASTComplete): void {
 
-    if (methods && methods.enter) {
-      methods.enter(node, parent)
+    let methods
+    if (node.type !== 'Program') {
+      methods = visitor[node.type]
+    }
+
+
+    // when methods is ture, parent cannot be undefined, so use ! here
+    if (node.type !== 'Program' && methods) {
+      methods.enter(node, parent!)
     }
 
     switch (node.type) {
@@ -40,10 +73,10 @@ export function traverser(ast: AST, visitor: Visitor) {
         assertNever(node, node)
     }
 
-    if (methods && methods.exit) {
-      methods.exit(node, parent)
+    if (node.type !== 'Program' && methods && methods.exit) {
+      methods.exit(node, parent as ASTComplete)
     }
   }
 
-  traverseNode(ast, null)
+  traverseNode(ast)
 }
