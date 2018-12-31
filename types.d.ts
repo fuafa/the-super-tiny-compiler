@@ -80,11 +80,13 @@ type ExpressionStatement = {
 
 type CallExpression = {
   type: 'CallExpression',
-  callee: {
-    type: 'Identifier',
-    name: string
-  },
+  callee: Identifier,
   arguments: ValueExpression[] 
+}
+
+type Identifier = {
+  type: 'Identifier',
+  name: string
 }
 
 type ValueExpression<T extends 'NumberLiteral' | 'StringLiteral' = 'NumberLiteral' | 'StringLiteral'> = {

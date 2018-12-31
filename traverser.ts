@@ -32,7 +32,7 @@ type CallVisitor = {
   }
 }
 
-function assertNever(x: never, node: any): never {
+export function assertNever(x: never, node: any): never {
   throw new TypeError(node.type)
 }
 export default function traverser(ast: AST, visitor: Visitor) {
