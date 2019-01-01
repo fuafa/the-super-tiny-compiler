@@ -40,7 +40,7 @@ export default function parser(tokens: TokenObject[]) {
 
       while (
         (token.type !== 'paren') ||
-        (token.type === 'paren' && token.value === ')')
+        (token.type === 'paren' && token.value !== ')')
       ) {
         node.params.push(walk())
         token = tokens[current]
